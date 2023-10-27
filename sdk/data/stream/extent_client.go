@@ -120,11 +120,11 @@ type ExtentConfig struct {
 	OnGetExtents      GetExtentsFunc
 	OnTruncate        TruncateFunc
 	OnEvictIcache     EvictIcacheFunc
-	OnLookupPath	  LookupPathFunc
-	OnLookup		  LookupFunc
-	OnReaddir		  ReaddirFunc
-	OnBatchInodeGet	  BatchInodeGetFunc
-	OnPutIcache		  PutIcacheFunc
+	OnLookupPath      LookupPathFunc
+	OnLookup          LookupFunc
+	OnReaddir         ReaddirFunc
+	OnBatchInodeGet   BatchInodeGetFunc
+	OnPutIcache       PutIcacheFunc
 	OnLoadBcache      LoadBcacheFunc
 	OnCacheBcache     CacheBcacheFunc
 	OnEvictBcache     EvictBacheFunc
