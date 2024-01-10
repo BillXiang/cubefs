@@ -2124,6 +2124,17 @@ func (m *Server) updateVol(w http.ResponseWriter, r *http.Request) {
 
 	newArgs := getVolVarargs(vol)
 
+	if err = parseHTTPArgs(r,
+		newHTTPArg("remoteCacheEnable", &newArgs.remoteCacheEnable).OmitEmpty(),
+		newHTTPArg("remoteCachePath", &newArgs.remoteCachePath).OmitEmpty(),
+		newHTTPArg("remoteCacheAutoPrepare", &newArgs.remoteCacheAutoPrepare).OmitEmpty(),
+		newHTTPArg("remoteCacheTTL", &newArgs.remoteCacheTTL).OmitEmpty(),
+		newHTTPArg("remoteCacheReadTimeoutSec", &newArgs.remoteCacheReadTimeoutSec).OmitEmpty(),
+	); err != nil {
+		sendErrReply(w, r, &proto.HTTPReply{Code: proto.ErrCodeParamError, Msg: err.Error()})
+		return
+	}
+
 	newArgs.zoneName = req.zoneName
 	newArgs.description = req.description
 	newArgs.capacity = req.capacity
@@ -2523,6 +2534,12 @@ func newSimpleView(vol *Vol) (view *proto.SimpleVolView) {
 		LatestVer:               vol.VersionMgr.getLatestVer(),
 		Forbidden:               vol.Forbidden,
 		EnableAuditLog:          vol.EnableAuditLog,
+
+		RemoteCacheEnable:         vol.remoteCacheEnable,
+		RemoteCachePath:           vol.remoteCachePath,
+		RemoteCacheAutoPrepare:    vol.remoteCacheAutoPrepare,
+		RemoteCacheTTL:            vol.remoteCacheTTL,
+		RemoteCacheReadTimeoutSec: vol.remoteCacheReadTimeoutSec,
 	}
 
 	vol.uidSpaceManager.RLock()
