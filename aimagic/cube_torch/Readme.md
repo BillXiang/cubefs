@@ -86,11 +86,8 @@ torchvision.datasets.ImageFolder、torchvision.datasets.DatasetFolder、torchvis
 ### 如果您是自定义dataset集，需要如以下方式新增函数train_data_list：
 
 ```python
-import numpy as np
 import cube_torch
-
-os.environ['VOL_NAME'] = 'ltptest'
-
+os.environ['VOL_NAME'] = 'tech-data-test1'  //这里的volname必须是ChubaoFS VolName
 
 
 class VLPDataset(Dataset):
@@ -110,13 +107,17 @@ class VLPDataset(Dataset):
         self.title_list=np.array(self.title_list)
         super().__init__()
 
+    ##新增train_data_list函数，表示需要告诉chubaofs 所需要关注的训练集文件名列表。
+    ##如果每个item只需要读取1种类型的文件，则使用：
+    def train_data_list(self):
+        data=np.array([self.image_lists])
+        return data
+    #这样的话，每个index会同时提前读取self.img_list[index]  的文件
+
+    #如果每个item需要同时读取2种类型的文件，则使用：
     def train_data_list(self):
         return np.array([self.img_list, self.title_list])
-      ##新增train_data_list函数，表示需要告诉chubaofs 所需要关注的训练集文件名列表。
-      # 注意，该函数可以返回多个，如上：返回训练图片文件列表、该图片对应的标题文件列表
-      # self.img_list 必须是一个numpy的一维数组，可能是：[/mnt/cfs/jpg/1.jpg,/mnt/cfs/jpg/2.jpg,/mnt/cfs/jpg/3.jpg,/mnt/cfs/jpg/4.jpg]
-      # self.title_list 必须是一个numpy的一维数组，可能是[/mnt/cfs/title/1.title,/mnt/cfs/title/2.title,/mnt/cfs/title/3.title,/mnt/cfs/title/4.title]
-      # 注意img_list 里面的文件名和title_list里面的文件名，必须一一对应。
+    #这样的话，每个index会同时提前读取self.img_list[index] 和self.title_list[index] 的文件
 
     def __len__(self):
         return len(self.img_list)
@@ -131,9 +132,6 @@ class VLPDataset(Dataset):
             title_tokens = torch.load(self.title_list[index])
         except Exception as e:
                 return self.__getitem__((index + 1) % self.__len__())
-
-
-
 ```
 
 
